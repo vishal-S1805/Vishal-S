@@ -2,29 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - My Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Day 17 - Auth Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; gap: 50px; margin-top: 100px; background: #f4f6f9; }
+        .box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+    </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <a href="index.html" class="active">Home</a>
-            <a href="about.html">About</a>
-            <a href="projects.html">Projects</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+    <div class="box">
+        <h3>Create Account (Signup)</h3>
+        <input type="text" id="signName" placeholder="Full Name" required>
+        <input type="email" id="signEmail" placeholder="Email Address" required>
+        <input type="password" id="signPass" placeholder="Password" required>
+        <button onclick="handleSignup()">Register</button>
+    </div>
 
-    <main class="content-box text-center">
-        <h1>Welcome to My Portfolio</h1>
-        <p>A pristine canvas showcasing professional creative direction, modern responsive code design, and structured web development solutions.</p>
-    </main>
+    <div class="box">
+        <h3>Access Portal (Login)</h3>
+        <input type="email" id="logEmail" placeholder="Email Address" required>
+        <input type="password" id="logPass" placeholder="Password" required>
+        <button onclick="handleLogin()">Sign In</button>
+    </div>
 
-    <footer>
-        <p>&copy; 2026 Portfolio Website. All rights reserved.</p>
-    </footer>
+    <script>
+        const BACKEND_URL = 'http://localhost:3000';
 
+        async function handleSignup() {
+            const name = document.getElementById('signName').value;
+            const email = document.getElementById('signEmail').value;
+            const password = document.getElementById('signPass').value;
+
+            const res = await fetch(`${BACKEND_URL}/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+            const data = await res.json();
+            alert(data.message || data.error);
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('logEmail').value;
+            const password = document.getElementById('logPass').value;
+
+            const res = await fetch(`${BACKEND_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (data.token) {
+                // Save token and username to localStorage
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userName', data.name);
+                window.location.href = 'dashboard.html'; // Redirect to dashboard
+            } else {
+                alert(data.message || "Login failed.");
+            }
+        }
+    </script>
 </body>
 </html>
